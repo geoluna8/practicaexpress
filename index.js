@@ -6,6 +6,7 @@ const { connect } = require("mongoose");
 const { agenda } = require("./schema.js");
 const FakeData = require("./fakeData.json");
 
+//Le decimos al server donde esta la carpeta del front
 const Server = Express();
 Server.use(Express.static("public"));
 
