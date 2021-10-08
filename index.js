@@ -6,6 +6,7 @@ const cors = require('cors');
 // llamando al
 const { agenda } = require("./schema.js");
 const FakeData = require("./fakeData.json");
+const { response, request } = require("express");
 
 //Le decimos al server donde esta la carpeta del front
 const Server = Express();
@@ -53,6 +54,7 @@ Server.get("/api/consulta", (request, response) => {
     });
 });
 
+//Router para dar de alta un registro
 Server.post("/api/alta", (request, response) => {
 
     console.log("alta", request.body);
@@ -81,7 +83,39 @@ Server.post("/api/alta", (request, response) => {
         }
     });
 
-    }); 
+}); 
+
+//ruta para obtener un registro por id
+Server.post('/api/getone', (request, response) => {
+    console.log('buscar: ', request.body);
+    // { <field>: { $eq: <value> } }
+    agenda.findOne({_id:{$eq: request.body._id}}, (error, data) => {
+            if(error){
+                console.log(error);
+            } else {
+                response.send(data);
+            }
+        });
+});
+
+Server.put('/api/actualizar', (request, response) => {
+
+    console.log('actualizar: ', request.body)
+
+    agenda.findByIdAndUpdate(request.body._id, {
+        name:request.body.name,
+        lastName: request.body.lastName,
+        age:request.body.age
+    }, (error, data) => {
+        if (error) {
+            response.status(404);
+            response.json(error);
+        } else {
+            response.status(200);
+            response.json(data);
+        }
+    });
+});
 
 
 // Router para crear datos de manera aleatoria
