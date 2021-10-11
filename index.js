@@ -98,6 +98,8 @@ Server.post('/api/getone', (request, response) => {
         });
 });
 
+
+//ruta para hacer update
 Server.put('/api/actualizar', (request, response) => {
 
     console.log('actualizar: ', request.body)
@@ -114,6 +116,23 @@ Server.put('/api/actualizar', (request, response) => {
             response.status(200);
             response.json(data);
         }
+    });
+});
+
+//Ruta para borrar un registro por id
+Server.delete('/api/borrar/:persona_id', (request, response)=> {
+    console.log('borrar: ', request.params.persona_id);
+
+    agenda.findByIdAndDelete((request.params.persona_id), 
+    function(error, data) {
+        if(error){
+            response.status(404);
+            response.json(error);
+        } else {
+            response.status(200);
+            response.json({ message: 'Successfully deleted' });
+        }
+
     });
 });
 
