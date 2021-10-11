@@ -36,6 +36,107 @@ Server.get('/api', (req, res) => {
     res.send("Welcome to Geovanny's Express Server");
 });
 
+//-------------- Forma con Route --------------
+//Usando route para dirigir las peticiones por una sola ruta
+Server.route('/api/personas')
+.get((request, response) => {
+    // Router para consultar todos los datos generados.
+    // Generamos una busqueda completa.
+    console.log("consulta");
+    agenda.find({}, (error, data) => {
+        // En caso de error mostramos el problema
+        if (error) {
+            response.status(404);
+            response.json(error);
+        } else {
+             // en caso de que todo salga correcto enviamos la respuesta.
+            response.status(200);
+            response.json(data);
+        }
+    });
+})
+.post((request, response) => {
+    //Router para dar de alta un registro
+    console.log("alta", request.body);
+
+        const DATA = {
+            name: request.body.name,
+            lastName: request.body.lastName,
+            age: request.body.age,
+            random: 0
+        };
+    
+    // Se indica que se crea un nuevo registro
+    const AGEMDA = new agenda(DATA);
+
+    // Se recibe la respuesta generada al crear un nuevo registro.
+    AGEMDA.save((error, data) => {
+        // En caso de error mostramos el problema
+        if (error) {
+            response.status(404);
+            response.json(error);
+        } else {
+            // en caso de que todo salga correcto enviamos la respuesta.
+            response.status(200);
+            response.json(data);
+            //response.json({ message: 'Persona creada!'});
+        }
+    });
+});
+
+//Router personas con parametro
+Server.route('/api/personas/:persona_id')
+.delete((request, response)=> {
+    //Router para borrar un registro
+    console.log('borrar: ', request.params.persona_id);
+
+    agenda.findByIdAndDelete((request.params.persona_id), 
+    function(error, data) {
+        if(error){
+            response.status(404);
+            response.json(error);
+        } else {
+            response.status(200);
+            response.json({ message: 'Successfully deleted' });
+        }
+
+    });
+})
+.put((request, response) => {
+
+    //router para actualizar un registro
+    console.log('actualizar: ', request.params.persona_id)
+
+    agenda.findByIdAndUpdate(request.params.persona_id, 
+    {
+        name:request.body.name,
+        lastName: request.body.lastName,
+        age:request.body.age
+    }, 
+    (error, data) => {
+        if (error) {
+            response.status(404);
+            response.json(error);
+        } else {
+            response.status(200);
+            response.json(data);
+        }
+    });
+}).post((request, response) => {
+    //router para obtener buscar un registro
+    console.log('buscar: ', request.params.persona_id);
+    // { <field>: { $eq: <value> } }
+    agenda.findOne({_id:{$eq: request.params.persona_id}}, (error, data) => {
+            if(error){
+                console.log(error);
+            } else {
+                response.send(data);
+            }
+        });
+});
+
+
+// ---------------Modo Normal sin Route------------------
 // Router para consultar todos los datos generados.
 Server.get("/api/consulta", (request, response) => {
  
